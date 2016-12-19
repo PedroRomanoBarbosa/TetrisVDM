@@ -1,0 +1,17 @@
+class Piece
+types
+	public Type = <Square> | <Line> | <STypeR> | <STypeL> | <LTypeR> | <LTypeR> | <TType>;
+	public Coordinates :: x: nat;
+	public Direction = <Up> | <Down> | <Right>| <Left>;
+	private Row = seq of char;
+values
+-- TODO Define values here
+instance variables
+
+operations
+-- TODO Define operations here
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end Piece
