@@ -42,7 +42,7 @@ operations
 	
 	public getRandomPieceType: () ==> Piece`Type
 	getRandomPieceType() == (
-		return pieceTypes(MATH`rand(7) + 1);
+		return pieceTypes(MATH`rand(1));
 	);
 			
 functions

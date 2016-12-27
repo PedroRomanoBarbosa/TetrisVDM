@@ -1,7 +1,7 @@
 class TetrisTest
 
 	operations
-    public static main: () ==> ()
+    public static main: () ==> int
     main() ==
     (
     	dcl tetris: Table := new Table(5,5);
@@ -10,7 +10,7 @@ class TetrisTest
     	--tetris.newPiece();
     	--tetris.newPiece();
     	--tetris.newPiece();
-    	IO`print(tetris.getRandomPieceType());
+    	return tetris.getRandom();
     );
     
     traces

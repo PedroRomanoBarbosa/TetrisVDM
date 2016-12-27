@@ -10,7 +10,7 @@ instance variables
 	private columns: nat;
 	private table: seq of Row;
 	private pieces: set of Piece;
-	private pieceTypes: seq of Piece`Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
+	private pieceTypes: set of Piece`Type := {<I>, <J>, <L>, <O>, <S>, <T>, <Z>};
 	
 operations
 	public Table: nat * nat ==> Table
@@ -40,9 +40,9 @@ operations
 		pieces := pieces union {p};
 	);
 	
-	public getRandomPieceType: () ==> Piece`Type
-	getRandomPieceType() == (
-		return pieceTypes(MATH`rand(7) + 1);
+	public getRandom: () ==> int
+	getRandom() == (
+		return MATH`rand(100);
 	);
 			
 functions
