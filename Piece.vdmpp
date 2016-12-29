@@ -1,18 +1,45 @@
 class Piece
+
 types
 	public Type = <I>| <J> | <L> | <O> | <S> | <T> | <Z>;
-	public Coordinates :: x: nat y: nat;
+	public Coordinate :: x: nat y: nat;
 	public Direction = <Up> | <Down> | <Right>| <Left>;
-	private Row = seq of char;
-values
--- TODO Define values here
+
 instance variables
-
-operations
+	public static pieceTypes: seq of Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
+	protected position : Coordinate;
+	protected direction: Direction;
+	protected symbol: char;
+	private type: Type;
 	
-
+operations
+	public Piece: nat * nat ==> Piece
+	Piece(x,y) == (
+		position.x := x;
+		position.y := y;
+	);
+	
+	public static createNewPiece: Type ==> Piece
+	createNewPiece(t) == (
+		dcl p: Piece;
+		cases t: 
+			<I> -> p := new IShapePiece(),
+			<J> -> p := new JShapePiece(),
+			<L> -> p := new LShapePiece(),
+			<O> -> p := new OShapePiece(),
+			<S> -> p := new SShapePiece(),
+			<T> -> p := new TShapePiece(),
+			<Z> -> p := new ZShapePiece()
+		end;
+		return p;
+	);
+	
+	public paint : () ==> set of Coordinate
+	paint () == is subclass responsibility;
+	
+	public getSymbol : () ==> char
+	getSymbol () == return symbol;
+	
 functions
--- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
+
 end Piece

@@ -4,45 +4,76 @@ types
 	public Row = seq of char;
 	
 values
+	public emptyTile: char = ' ';
 
 instance variables
 	private rows: nat;
 	private columns: nat;
 	private table: seq of Row;
-	private pieces: set of Piece;
-	private pieceTypes: seq of Piece`Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
+	private currentPiece: Piece;
 	
 operations
 	public Table: nat * nat ==> Table
 	Table(r,c) == (
 		rows := r;
 		columns := c;
-		pieces := {};
 		table := [];
 		for inc1 = 1 to rows do (
 			dcl tempRow: Row := [];
 			for inc2 = 1 to columns do (
-				tempRow := tempRow ^ ['0'];
+				tempRow := tempRow ^ [' '];
 			);
 			table := table ^ [tempRow];
 		);
 		return self;
+	)
+	pre r > c
+	post len table = r;
+	
+	public getRandomPiece: () ==> Piece`Type
+	getRandomPiece() == (
+		return Piece`pieceTypes(MATH`rand(7) + 1);
 	);
-		
-	public print: () ==> seq of Row
+	
+	public setCurrentPiece: Piece ==> ()
+	setCurrentPiece(p) == (
+		currentPiece := p;
+	);
+	
+	public getTile: nat1 * nat1 ==> char
+	getTile(x,y) == (
+		return table(y)(x);
+	);
+	
+	public paintCurrentPiece: () ==> ()
+	paintCurrentPiece() == (
+		paint(currentPiece.paint(),currentPiece.getSymbol());
+	);
+	
+	public paint: set of Piece`Coordinate * char ==> ()
+	paint(positions, symbol) == (
+		for all pos in set positions do (
+			table(pos.y)(pos.x) := symbol;
+		);
+	);
+	
+	public print: () ==> ()
 	print() == (
-		return table;
-	);
-	
-	public newPiece: () ==> ()
-	newPiece() == (
-		dcl p: Piece := new Piece();
-		pieces := pieces union {p};
-	);
-	
-	public getRandomPieceType: () ==> Piece`Type
-	getRandomPieceType() == (
-		return pieceTypes(MATH`rand(7) + 1);
+		IO`print("#");
+		for inc = 1 to columns do (
+			IO`print("#");
+		);
+		IO`println("#");
+		for e in table do (
+			IO`print("#");
+			IO`print(e);
+			IO`println("#");
+		);
+		IO`print("#");
+		for inc = 1 to columns do (
+			IO`print("#");
+		);
+		IO`println("#");
 	);
 			
 functions

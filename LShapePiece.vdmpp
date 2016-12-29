@@ -1,0 +1,23 @@
+class LShapePiece is subclass of Piece
+
+instance variables
+
+operations
+
+	public LShapePiece: nat * nat * char ==> LShapePiece
+	LShapePiece(x,y,s) == (
+		position := mk_Coordinate(x,y);
+		symbol := s;
+		return self;
+	);
+
+	public paint : () ==> set of Coordinate
+	paint () == (
+	 dcl positions: set of Coordinate := {};
+	 positions := positions union { mk_Coordinate(1,1) };
+	 positions := positions union { mk_Coordinate(1,2) };
+	 positions := positions union { mk_Coordinate(1,3) };
+	 return positions;
+	);
+	
+end LShapePiece

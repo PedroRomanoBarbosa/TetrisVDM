@@ -1,0 +1,16 @@
+class OShapePiece is subclass of Piece
+
+instance variables
+
+operations
+	public paint : () ==> set of Coordinate
+	paint () == (
+	 dcl positions: set of Coordinate;
+	 dcl position: Coordinate;
+	 position.x := 1;
+	 position.y := 2;
+	 positions := positions union {position};
+	 return positions;
+	);
+
+end OShapePiece

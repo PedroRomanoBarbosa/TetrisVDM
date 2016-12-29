@@ -4,15 +4,17 @@ class TetrisTest
     public static main: () ==> ()
     main() ==
     (
-    	dcl tetris: Table := new Table(5,5);
+    	dcl tetris: Table := new Table(15,10);
+    	dcl l: Piece := new LShapePiece(1,1,'X');
     	-- Add pieces
     	--tetris.newPiece();
     	--tetris.newPiece();
     	--tetris.newPiece();
     	--tetris.newPiece();
-    	IO`print(tetris.getRandomPieceType());
+    	tetris.setCurrentPiece(l);
+    	IO`println(l);
+    	tetris.paintCurrentPiece();
+    	tetris.print();
     );
-    
-    traces
     
 end TetrisTest
