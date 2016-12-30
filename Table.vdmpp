@@ -45,12 +45,30 @@ operations
 		return table(y)(x);
 	);
 	
-	public paintCurrentPiece: () ==> ()
-	paintCurrentPiece() == (
-		paint(currentPiece.paint(),currentPiece.getSymbol());
+	private moveCurrentPieceDown: () ==> ()
+	moveCurrentPieceDown() == (
+		currentPiece.down();
 	);
 	
-	public paint: set of Piece`Coordinate * char ==> ()
+	public next: () ==> ()
+	next() == (
+		removeCurrentPiece();
+		moveCurrentPieceDown();
+		paintCurrentPiece();
+		print();
+	);
+	
+	private paintCurrentPiece: () ==> ()
+	paintCurrentPiece() == (
+		paint(currentPiece.paint(), currentPiece.getSymbol());
+	);
+	
+	private removeCurrentPiece: () ==> ()
+	removeCurrentPiece() == (
+		paint(currentPiece.paint(), ' ');
+	);
+	
+	private paint: set of Piece`Coordinate * char ==> ()
 	paint(positions, symbol) == (
 		for all pos in set positions do (
 			table(pos.y)(pos.x) := symbol;

@@ -2,7 +2,7 @@ class Piece
 
 types
 	public Type = <I>| <J> | <L> | <O> | <S> | <T> | <Z>;
-	public Coordinate :: x: nat y: nat;
+	public Coordinate :: x: int y: int;
 	public Direction = <Up> | <Down> | <Right>| <Left>;
 
 instance variables
@@ -15,8 +15,7 @@ instance variables
 operations
 	public Piece: nat * nat ==> Piece
 	Piece(x,y) == (
-		position.x := x;
-		position.y := y;
+		position := mk_Coordinate(x,y);
 	);
 	
 	public static createNewPiece: Type ==> Piece
@@ -34,11 +33,32 @@ operations
 		return p;
 	);
 	
-	public paint : () ==> set of Coordinate
-	paint () == is subclass responsibility;
+	protected movePiece: int * int ==> ()
+	movePiece(x,y) == (
+		position.x := position.x + x;
+		position.y := position.y + y;
+	);
+	
+	public down: () ==> ()
+	down() == (
+		movePiece(0,1);
+	);
+	
+	public left: () ==> ()
+	left() == (
+		movePiece(-1,0);
+	);
+	
+	public right: () ==> ()
+	right() == (
+		movePiece(1,0);
+	);
 	
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
+	
+	public paint : () ==> set of Coordinate
+	paint () == is subclass responsibility;
 	
 functions
 

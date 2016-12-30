@@ -1,12 +1,23 @@
 class LShapePiece is subclass of Piece
 
+values
+	private UP: Coordinate = mk_Coordinate(0,1);
+	private DOWN: Coordinate = mk_Coordinate(0,-1);
+	private LEFT: Coordinate = mk_Coordinate(-1,0);
+	private RIGHT: Coordinate = mk_Coordinate(1,0);
+
 instance variables
+	private pivot: Coordinate;
+	private rotation: nat1;
+	private rotations: seq of Coordinate := [UP,DOWN,LEFT,RIGHT];
 
 operations
 
 	public LShapePiece: nat * nat * char ==> LShapePiece
 	LShapePiece(x,y,s) == (
 		position := mk_Coordinate(x,y);
+		pivot := mk_Coordinate(x+1,y+1);
+		rotation := 1;
 		symbol := s;
 		return self;
 	);
@@ -14,10 +25,19 @@ operations
 	public paint : () ==> set of Coordinate
 	paint () == (
 	 dcl positions: set of Coordinate := {};
-	 positions := positions union { mk_Coordinate(1,1) };
-	 positions := positions union { mk_Coordinate(1,2) };
-	 positions := positions union { mk_Coordinate(1,3) };
+	 positions := positions union { mk_Coordinate(pivot.x-1,pivot.y) };
+	 positions := positions union { mk_Coordinate(pivot.x-1,pivot.y+1) };
+	 positions := positions union { mk_Coordinate(pivot.x,pivot.y+1) };
+	 positions := positions union { mk_Coordinate(pivot.x+1,pivot.y+1) };
 	 return positions;
+	);
+	
+	public movePiece: int * int ==> ()
+	movePiece(x,y) == (
+		position.x := position.x + x;
+		position.y := position.y + y;
+		pivot.x := pivot.x + x;
+		pivot.y := pivot.y + y;
 	);
 	
 end LShapePiece
