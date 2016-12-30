@@ -4,17 +4,21 @@ types
 	public Type = <I>| <J> | <L> | <O> | <S> | <T> | <Z>;
 	public Coordinate :: x: int y: int;
 	public Direction = <Up> | <Down> | <Right>| <Left>;
+	public Sprite = seq of Coordinate;
 
 instance variables
 	public static pieceTypes: seq of Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
 	protected position : Coordinate;
-	protected direction: Direction;
+	protected originalTiles: Sprite;
+	protected tiles: Sprite;
 	protected symbol: char;
-	private type: Type;
 	
 operations
-	public Piece: nat * nat ==> Piece
-	Piece(x,y) == (
+	public Piece: int * int * char * Sprite ==> Piece
+	Piece(x,y,s,t) == (
+		symbol := s;
+		originalTiles := t;
+		tiles := t;
 		position := mk_Coordinate(x,y);
 	);
 	
@@ -31,6 +35,11 @@ operations
 			<Z> -> p := new ZShapePiece()
 		end;
 		return p;
+	);
+	
+	public getTiles: () ==> seq of Coordinate
+	getTiles () == (
+		return tiles;
 	);
 	
 	protected movePiece: int * int ==> ()
@@ -56,9 +65,6 @@ operations
 	
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
-	
-	public paint : () ==> set of Coordinate
-	paint () == is subclass responsibility;
 	
 functions
 

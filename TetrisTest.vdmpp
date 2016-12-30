@@ -5,11 +5,9 @@ class TetrisTest
     main() ==
     (
     	dcl tetris: Table := new Table(15,10);
-    	dcl l: Piece := new LShapePiece(1,1,'L');
+    	dcl l: LShapePiece := new LShapePiece(4,4,'L',1);
     	tetris.setCurrentPiece(l);
-    	tetris.next();
-    	tetris.next();
-    	tetris.next();
+    	tetris.print();
     );
     
 end TetrisTest

@@ -38,6 +38,7 @@ operations
 	public setCurrentPiece: Piece ==> ()
 	setCurrentPiece(p) == (
 		currentPiece := p;
+		paintCurrentPiece();
 	);
 	
 	public getTile: nat1 * nat1 ==> char
@@ -60,17 +61,17 @@ operations
 	
 	private paintCurrentPiece: () ==> ()
 	paintCurrentPiece() == (
-		paint(currentPiece.paint(), currentPiece.getSymbol());
+		paint(currentPiece.getTiles(), currentPiece.getSymbol());
 	);
 	
 	private removeCurrentPiece: () ==> ()
 	removeCurrentPiece() == (
-		paint(currentPiece.paint(), ' ');
+		paint(currentPiece.getTiles(), ' ');
 	);
 	
-	private paint: set of Piece`Coordinate * char ==> ()
+	private paint: seq of Piece`Coordinate * char ==> ()
 	paint(positions, symbol) == (
-		for all pos in set positions do (
+		for pos in positions do (
 			table(pos.y)(pos.x) := symbol;
 		);
 	);

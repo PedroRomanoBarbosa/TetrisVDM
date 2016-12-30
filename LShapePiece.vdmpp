@@ -1,43 +1,16 @@
-class LShapePiece is subclass of Piece
-
-values
-	private UP: Coordinate = mk_Coordinate(0,1);
-	private DOWN: Coordinate = mk_Coordinate(0,-1);
-	private LEFT: Coordinate = mk_Coordinate(-1,0);
-	private RIGHT: Coordinate = mk_Coordinate(1,0);
+class LShapePiece is subclass of PivotPiece
 
 instance variables
-	private pivot: Coordinate;
-	private rotation: nat1;
-	private rotations: seq of Coordinate := [UP,DOWN,LEFT,RIGHT];
 
 operations
 
-	public LShapePiece: nat * nat * char ==> LShapePiece
-	LShapePiece(x,y,s) == (
-		position := mk_Coordinate(x,y);
-		pivot := mk_Coordinate(x+1,y+1);
-		rotation := 1;
-		symbol := s;
-		return self;
-	);
-
-	public paint : () ==> set of Coordinate
-	paint () == (
-	 dcl positions: set of Coordinate := {};
-	 positions := positions union { mk_Coordinate(pivot.x-1,pivot.y) };
-	 positions := positions union { mk_Coordinate(pivot.x-1,pivot.y+1) };
-	 positions := positions union { mk_Coordinate(pivot.x,pivot.y+1) };
-	 positions := positions union { mk_Coordinate(pivot.x+1,pivot.y+1) };
-	 return positions;
-	);
-	
-	public movePiece: int * int ==> ()
-	movePiece(x,y) == (
-		position.x := position.x + x;
-		position.y := position.y + y;
-		pivot.x := pivot.x + x;
-		pivot.y := pivot.y + y;
+	-- OOO
+	-- XOO
+	-- XXX
+	public LShapePiece: int * int * char * nat1 ==> LShapePiece
+	LShapePiece(x, y, s, r) == (
+		dcl t: Sprite := [mk_Coordinate(-1,0), mk_Coordinate(-1,1), mk_Coordinate(0,1), mk_Coordinate(1,1)];
+		PivotPiece(x, y, s, r, t);
 	);
 	
 end LShapePiece
