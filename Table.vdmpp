@@ -46,9 +46,33 @@ operations
 		return table(y)(x);
 	);
 	
-	private moveCurrentPieceDown: () ==> ()
+	private moveCurrentPiece: int * int ==> ()
+	moveCurrentPiece(x,y) == (
+		removeCurrentPiece();
+		currentPiece.move(x,y);
+		paintCurrentPiece();
+	);
+	
+	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
-		currentPiece.down();
+		moveCurrentPiece(0,1);
+	);
+	
+	public moveCurrentPieceLeft: () ==> ()
+	moveCurrentPieceLeft() == (
+		moveCurrentPiece(-1,0);
+	);
+	
+	public moveCurrentPieceRight: () ==> ()
+	moveCurrentPieceRight() == (
+		moveCurrentPiece(1,0);
+	);
+	
+	public rotateCurrentPiece: nat1 ==> ()
+	rotateCurrentPiece(rot) == (
+		removeCurrentPiece();
+		currentPiece.rotate(rot);
+		paintCurrentPiece();
 	);
 	
 	public next: () ==> ()

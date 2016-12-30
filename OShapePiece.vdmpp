@@ -1,4 +1,4 @@
-class OShapePiece is subclass of Piece
+class OShapePiece is subclass of PivotPiece
 
 instance variables
 

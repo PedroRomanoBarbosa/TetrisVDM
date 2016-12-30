@@ -1,44 +1,32 @@
 class PivotPiece is subclass of Piece
 
 instance variables
-	private translation: Coordinate;
-	private rotation: nat1;
+	private currentRotation: nat1;
 
 operations
 
-	public PivotPiece: int * int * char * nat1 * Sprite ==> PivotPiece
-	PivotPiece(x, y, s, r, t) == (
-		rotation := r;
-		translation := mk_Coordinate(x, y);
-		movePiece(x,y);
+	public PivotPiece: int * int * char * Sprite ==> PivotPiece
+	PivotPiece(x, y, s, t) == (
+		currentRotation := 1;
 		Piece(x, y, s, t);
 	);
 	
-	public movePiece: int * int ==> ()
-	movePiece(x,y) == (
-		translation.x := translation.x + x;
-		translation.y := translation.y + y;
-		translate(translation.x,translation.y);
-	);
-	
-	public translate: int * int ==> ()
-	translate(x,y) == (
+	private rotation: nat1 ==> ()
+	rotation(rot) == (
+		currentRotation := rot;
 		for inc = 1 to len tiles do (
-			tiles(inc).x := originalTiles(inc).x + x;
-			tiles(inc).y := originalTiles(inc).y + y;
+			 tiles(inc).x := originalTiles(inc).x * cos(rot) + originalTiles(inc).y * sin(rot);
+			 tiles(inc).y := originalTiles(inc).y * cos(rot) - originalTiles(inc).x * sin(rot);
 		);
 	);
 	
 	public rotate: nat1 ==> ()
 	rotate(rot) == (
-		rotation := rot;
-		for inc = 1 to len tiles do (
-			 tiles(inc).x := tiles(inc).x * cos(rot) - tiles(inc).y * sin(rot);
-			 tiles(inc).y := tiles(inc).x * sin(rot) + tiles(inc).y * cos(rot);
-		);
+		rotation(rot);
+		move(translation.x, translation.y);
 	);
 	
-	private cos: int ==> int
+	private cos: nat1 ==> int
 	cos(rot) == (
 		dcl cos: int := 0;
 		cases rot:
@@ -48,9 +36,11 @@ operations
 			4 -> cos := 0
 		end;
 		return cos;
-	);
+	)
+	pre rot < 5
+	post RESULT = 0 or RESULT = 1 or RESULT = -1;
 	
-	private sin: int ==> int
+	private sin: nat1 ==> int
 	sin(rot) == (
 		dcl cos: int := 0;
 		cases rot:
@@ -60,6 +50,8 @@ operations
 			4 -> cos := -1
 		end;
 		return cos;
-	);
+	)
+	pre rot < 5
+	post RESULT = 0 or RESULT = 1 or RESULT = -1;
 	
 end PivotPiece

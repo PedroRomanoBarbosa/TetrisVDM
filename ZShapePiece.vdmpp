@@ -1,4 +1,4 @@
-class ZShapePiece is subclass of Piece
+class ZShapePiece is subclass of PivotPiece
 
 instance variables
 

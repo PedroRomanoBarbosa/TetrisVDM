@@ -1,4 +1,4 @@
-class JShapePiece is subclass of Piece
+class JShapePiece is subclass of PivotPiece
 
 instance variables
 

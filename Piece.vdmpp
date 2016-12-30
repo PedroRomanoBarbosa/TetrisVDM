@@ -8,7 +8,7 @@ types
 
 instance variables
 	public static pieceTypes: seq of Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
-	protected position : Coordinate;
+	protected translation: Coordinate;
 	protected originalTiles: Sprite;
 	protected tiles: Sprite;
 	protected symbol: char;
@@ -19,7 +19,8 @@ operations
 		symbol := s;
 		originalTiles := t;
 		tiles := t;
-		position := mk_Coordinate(x,y);
+		translation := mk_Coordinate(0, 0);
+		move(x,y);
 	);
 	
 	public static createNewPiece: Type ==> Piece
@@ -42,29 +43,21 @@ operations
 		return tiles;
 	);
 	
-	protected movePiece: int * int ==> ()
-	movePiece(x,y) == (
-		position.x := position.x + x;
-		position.y := position.y + y;
-	);
-	
-	public down: () ==> ()
-	down() == (
-		movePiece(0,1);
-	);
-	
-	public left: () ==> ()
-	left() == (
-		movePiece(-1,0);
-	);
-	
-	public right: () ==> ()
-	right() == (
-		movePiece(1,0);
+	public move: int * int ==> ()
+	move(x,y) == (
+		translation.x := translation.x + x;
+		translation.y := translation.y + y;
+		for inc = 1 to len tiles do (
+			tiles(inc).x := tiles(inc).x + x;
+			tiles(inc).y := tiles(inc).y + y;
+		);
 	);
 	
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
+	
+	public rotate: nat1 ==> ()
+	rotate(rot) == is subclass responsibility;
 	
 functions
 

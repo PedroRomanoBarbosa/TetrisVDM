@@ -1,4 +1,4 @@
-class IShapePiece is subclass of Piece
+class IShapePiece is subclass of PivotPiece
 
 instance variables
 

@@ -1,4 +1,4 @@
-class TShapePiece is subclass of Piece
+class TShapePiece is subclass of PivotPiece
 
 instance variables
 
