@@ -14,9 +14,9 @@ operations
 	private rotation: nat1 ==> ()
 	rotation(rot) == (
 		currentRotation := rot;
-		for inc = 1 to len tiles do (
-			 tiles(inc).x := originalTiles(inc).x * cos(rot) + originalTiles(inc).y * sin(rot);
-			 tiles(inc).y := originalTiles(inc).y * cos(rot) - originalTiles(inc).x * sin(rot);
+		for inc = 1 to len sprite do (
+			 sprite(inc).x := originalTiles(inc).x * cos(rot) + originalTiles(inc).y * sin(rot);
+			 sprite(inc).y := originalTiles(inc).y * cos(rot) - originalTiles(inc).x * sin(rot);
 		);
 	);
 	

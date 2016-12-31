@@ -75,6 +75,20 @@ operations
 		paintCurrentPiece();
 	);
 	
+	-- Checks the adjacent
+	public checkCurrentPieceDownCollision: () ==> bool
+	checkCurrentPieceDownCollision() == (
+		dcl sprite: Piece`Sprite := currentPiece.getTiles();
+		for tile in sprite do (
+			if tile.y <> rows then (
+				if table(tile.y + 1)(tile.x) <> ' ' and mk_Piece`Coordinate(tile.x, tile.y + 1) not in set elems sprite then
+					return true;
+			) else
+				return true;
+		);
+		return false;
+	);
+	
 	public next: () ==> ()
 	next() == (
 		removeCurrentPiece();
