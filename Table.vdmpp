@@ -11,6 +11,7 @@ instance variables
 	private columns: nat;
 	private table: seq of Row;
 	private currentPiece: Piece;
+	private symbols: seq of char := ['1', '2', '3', '4'];
 	
 operations
 	public Table: nat * nat ==> Table
@@ -55,7 +56,13 @@ operations
 	
 	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
-		moveCurrentPiece(0,1);
+		if not checkCurrentPieceDownCollision() then (
+			moveCurrentPiece(0,1);
+		) else (
+			dcl p: Piece := new LShapePiece(5,2,'L');
+			--rotateCurrentPiece(MATH`rand(4));
+			setCurrentPiece(p);
+		);
 	);
 	
 	public moveCurrentPieceLeft: () ==> ()
