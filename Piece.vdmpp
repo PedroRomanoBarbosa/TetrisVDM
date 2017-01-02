@@ -4,12 +4,17 @@ types
 	public Type = <I>| <J> | <L> | <O> | <S> | <T> | <Z>;
 	public SpriteMap = map Type to Sprite;
 	public Coordinate :: x: int y: int;
-	public Direction = <Up> | <Down> | <Right>| <Left>;
 	public Sprite = seq of Coordinate;
-
-instance variables
-	public static pieceTypes: seq of Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
-	public static defaultSprites: SpriteMap := {
+	
+values
+	public I_Shape_Piece: Type = <I>;
+	public J_Shape_Piece: Type = <J>;
+	public L_Shape_Piece: Type = <L>;
+	public O_Shape_Piece: Type = <O>;
+	public S_Shape_Piece: Type = <S>;
+	public T_Shape_Piece: Type = <T>;
+	public Z_Shape_Piece: Type = <Z>;
+	public defaultSprites: SpriteMap = {
 		<I> |-> [mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(0, 1), mk_Coordinate(0, 2)],
 		<J> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 1)],
 		<L> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(1, 1)],
@@ -18,19 +23,30 @@ instance variables
 		<T> |-> [mk_Coordinate(0, 0), mk_Coordinate(0, -1), mk_Coordinate(1, 0), mk_Coordinate(-1, 0)],
 		<O> |-> [mk_Coordinate(0, 0), mk_Coordinate(1, 1), mk_Coordinate(1, 0), mk_Coordinate(0, 1)]
 	};
+
+instance variables
 	protected translation: Coordinate;
 	protected originalTiles: Sprite;
 	protected sprite: Sprite;
 	protected symbol: char;
 	
 operations
-	public Piece: int * int * char * Type ==> Piece
-	Piece(x,y,s,t) == (
+	public Piece: int * int * Type * char ==> Piece
+	Piece(x,y,t,s) == (
 		symbol := s;
 		originalTiles := defaultSprites(t);
 		sprite := defaultSprites(t);
 		translation := mk_Coordinate(0, 0);
 		move(x,y);
+	);
+	
+	public static createNewPiece: nat1 * nat1 * Type * char ==> Piece
+	createNewPiece(x, y, type, s) == (
+		if type <> O_Shape_Piece and type <> I_Shape_Piece then (
+			return new PivotPiece(x, y, type, s); 
+		) else (
+			return new Piece(x, y, type, s);
+		)
 	);
 	
 	public getTiles: () ==> seq of Coordinate

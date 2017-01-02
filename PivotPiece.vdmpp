@@ -5,10 +5,10 @@ instance variables
 
 operations
 
-	public PivotPiece: int * int * char * Type ==> PivotPiece
-	PivotPiece(x, y, s, t) == (
+	public PivotPiece: int * int * Type * char ==> PivotPiece
+	PivotPiece(x, y, t, s) == (
 		currentRotation := 1;
-		Piece(x, y, s, t);
+		Piece(x, y, t, s);
 	);
 	
 	private rotation: nat1 ==> ()

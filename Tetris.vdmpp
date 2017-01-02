@@ -4,7 +4,8 @@ types
 	public Row = seq of char;
 	
 values
-	public emptyTile: char = ' ';
+	private EMPTY_TILE: char = ' ';
+	private PIECE_TYPES: seq of Piece`Type = [Piece`I_Shape_Piece];
 
 instance variables
 	private rows: nat;
@@ -21,7 +22,7 @@ operations
 		for inc1 = 1 to rows do (
 			dcl tempRow: Row := [];
 			for inc2 = 1 to columns do (
-				tempRow := tempRow ^ [emptyTile];
+				tempRow := tempRow ^ [EMPTY_TILE];
 			);
 			table := table ^ [tempRow];
 		);
@@ -32,7 +33,7 @@ operations
 	
 	public getRandomPiece: () ==> Piece`Type
 	getRandomPiece() == (
-		return Piece`pieceTypes(MATH`rand(7) + 1);
+		return PIECE_TYPES(MATH`rand(len PIECE_TYPES) + 1);
 	);
 	
 	public setCurrentPiece: Piece ==> ()

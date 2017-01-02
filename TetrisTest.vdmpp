@@ -3,8 +3,8 @@ class TetrisTest
 	operations
     public static main: () ==> ()
     main() == (
-    	dcl tetris: Tetris := new Tetris(15,10);
-    	dcl l: Piece := new Piece(3,2,'O',<L>);
+    	dcl tetris: Tetris := new Tetris(15, 10);
+    	dcl l: Piece := new Piece(3, 2, <L>, 'O');
     	
     	tetris.setCurrentPiece(l);
     	
