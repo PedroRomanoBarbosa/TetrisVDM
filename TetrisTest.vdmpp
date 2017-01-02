@@ -2,11 +2,28 @@ class TetrisTest
 
 	operations
     public static main: () ==> ()
-    main() ==
-    (
+    main() == (
     	dcl tetris: Table := new Table(15,10);
-    	dcl l: Piece := new LShapePiece(5,2,'L');
+    	dcl symbols: seq of char := ['A', 'B', 'C', 'D'];
+    	
+    	dcl l: Piece := new LShapePiece(3,1,symbols(1));
+    	
     	tetris.setCurrentPiece(l);
+    	tetris.drop();
+    	
+    	tetris.setCurrentPiece(new LShapePiece(3,1,symbols(1)));
+    	tetris.pushRight();
+    	tetris.drop();
+    	
+    	tetris.setCurrentPiece(new LShapePiece(3,1,symbols(1)));
+    	tetris.drop();
+    	
+    	tetris.setCurrentPiece(new LShapePiece(3,1,symbols(1)));
+    	tetris.pushRight();
+    	tetris.drop();
+    	
+    	tetris.checkLines();
+    	
     	tetris.print();
     );
     

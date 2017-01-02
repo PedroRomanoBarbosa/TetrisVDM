@@ -56,13 +56,7 @@ operations
 	
 	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
-		if not checkCurrentPieceDownCollision() then (
 			moveCurrentPiece(0,1);
-		) else (
-			dcl p: Piece := new LShapePiece(5,2,'L');
-			--rotateCurrentPiece(MATH`rand(4));
-			setCurrentPiece(p);
-		);
 	);
 	
 	public moveCurrentPieceLeft: () ==> ()
@@ -82,7 +76,6 @@ operations
 		paintCurrentPiece();
 	);
 	
-	-- Checks the adjacent
 	public checkCurrentPieceDownCollision: () ==> bool
 	checkCurrentPieceDownCollision() == (
 		dcl sprite: Piece`Sprite := currentPiece.getTiles();
@@ -94,6 +87,56 @@ operations
 				return true;
 		);
 		return false;
+	);
+	
+	public checkCurrentPieceRightCollision: () ==> bool
+	checkCurrentPieceRightCollision() == (
+		dcl sprite: Piece`Sprite := currentPiece.getTiles();
+		for tile in sprite do (
+			if tile.x <> columns then (
+				if table(tile.y)(tile.x + 1) <> ' ' and mk_Piece`Coordinate(tile.x + 1, tile.y) not in set elems sprite then
+					return true;
+			) else
+				return true;
+		);
+		return false;
+	);
+	
+	public checkCurrentPieceLeftCollision: () ==> bool
+	checkCurrentPieceLeftCollision() == (
+		dcl sprite: Piece`Sprite := currentPiece.getTiles();
+		for tile in sprite do (
+			if tile.x <> 1 then (
+				if table(tile.y)(tile.x - 1) <> ' ' and mk_Piece`Coordinate(tile.x - 1, tile.y) not in set elems sprite then
+					return true;
+			) else
+				return true;
+		);
+		return false;
+	);
+	
+	public drop: () ==> ()
+	drop() == (
+		while not checkCurrentPieceDownCollision() do moveCurrentPieceDown();
+	);
+	
+	public pushLeft: () ==> ()
+	pushLeft() == (
+		while not checkCurrentPieceLeftCollision() do moveCurrentPieceLeft();
+	);
+	
+	public pushRight: () ==> ()
+	pushRight() == (
+		while not checkCurrentPieceRightCollision() do moveCurrentPieceRight();
+	);
+	
+	public checkLines: () ==> ()
+	checkLines() == (
+		dcl incompleteRows: seq of Row := [ r | r in seq table & ' ' in set elems r];
+		clearTable();
+		for inc = 1 to len incompleteRows do (
+			table(inc) := incompleteRows(inc);
+		);
 	);
 	
 	public next: () ==> ()
@@ -118,6 +161,15 @@ operations
 	paint(positions, symbol) == (
 		for pos in positions do (
 			table(pos.y)(pos.x) := symbol;
+		);
+	);
+	
+	private clearTable: () ==> ()
+	clearTable() == (
+		for y = 1 to rows do (
+			for x = 1 to columns do (
+				table(y)(x) := ' ';
+			);
 		);
 	);
 	

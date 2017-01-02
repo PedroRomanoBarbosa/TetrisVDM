@@ -9,7 +9,7 @@ operations
 	-- XXX
 	public LShapePiece: int * int * char ==> LShapePiece
 	LShapePiece(x, y, s) == (
-		dcl t: Sprite := [mk_Coordinate(-1,-1), mk_Coordinate(-1,0), mk_Coordinate(0,0), mk_Coordinate(1,0)];
+		dcl t: Sprite := [mk_Coordinate(-2,0), mk_Coordinate(-1,0), mk_Coordinate(0,0), mk_Coordinate(1,0), mk_Coordinate(2,0)];
 		PivotPiece(x, y, s, t);
 	);
 	
