@@ -2,40 +2,35 @@ class Piece
 
 types
 	public Type = <I>| <J> | <L> | <O> | <S> | <T> | <Z>;
+	public SpriteMap = map Type to Sprite;
 	public Coordinate :: x: int y: int;
 	public Direction = <Up> | <Down> | <Right>| <Left>;
 	public Sprite = seq of Coordinate;
 
 instance variables
 	public static pieceTypes: seq of Type := [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
+	public static defaultSprites: SpriteMap := {
+		<I> |-> [mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(0, 1), mk_Coordinate(0, 2)],
+		<J> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 1)],
+		<L> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(1, 1)],
+		<S> |-> [mk_Coordinate(1, -1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 0)],
+		<Z> |-> [mk_Coordinate(-1, -1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(1, 0)],
+		<T> |-> [mk_Coordinate(0, 0), mk_Coordinate(0, -1), mk_Coordinate(1, 0), mk_Coordinate(-1, 0)],
+		<O> |-> [mk_Coordinate(0, 0), mk_Coordinate(1, 1), mk_Coordinate(1, 0), mk_Coordinate(0, 1)]
+	};
 	protected translation: Coordinate;
 	protected originalTiles: Sprite;
 	protected sprite: Sprite;
 	protected symbol: char;
 	
 operations
-	public Piece: int * int * char * Sprite ==> Piece
+	public Piece: int * int * char * Type ==> Piece
 	Piece(x,y,s,t) == (
 		symbol := s;
-		originalTiles := t;
-		sprite := t;
+		originalTiles := defaultSprites(t);
+		sprite := defaultSprites(t);
 		translation := mk_Coordinate(0, 0);
 		move(x,y);
-	);
-	
-	public static createNewPiece: Type ==> Piece
-	createNewPiece(t) == (
-		dcl p: Piece;
-		cases t: 
-			<I> -> p := new IShapePiece(),
-			<J> -> p := new JShapePiece(),
-			<L> -> p := new LShapePiece(),
-			<O> -> p := new OShapePiece(),
-			<S> -> p := new SShapePiece(),
-			<T> -> p := new TShapePiece(),
-			<Z> -> p := new ZShapePiece()
-		end;
-		return p;
 	);
 	
 	public getTiles: () ==> seq of Coordinate
@@ -57,7 +52,9 @@ operations
 	getSymbol () == return symbol;
 	
 	public rotate: nat1 ==> ()
-	rotate(rot) == is subclass responsibility;
+	rotate(rot) == (
+		return;
+	);
 	
 functions
 

@@ -1,4 +1,4 @@
-class Table
+class Tetris
 
 types
 	public Row = seq of char;
@@ -11,18 +11,17 @@ instance variables
 	private columns: nat;
 	private table: seq of Row;
 	private currentPiece: Piece;
-	private symbols: seq of char := ['1', '2', '3', '4'];
 	
 operations
-	public Table: nat * nat ==> Table
-	Table(r,c) == (
+	public Tetris: nat * nat ==> Tetris
+	Tetris(r,c) == (
 		rows := r;
 		columns := c;
 		table := [];
 		for inc1 = 1 to rows do (
 			dcl tempRow: Row := [];
 			for inc2 = 1 to columns do (
-				tempRow := tempRow ^ [' '];
+				tempRow := tempRow ^ [emptyTile];
 			);
 			table := table ^ [tempRow];
 		);
@@ -196,4 +195,4 @@ functions
 
 traces
 
-end Table
+end Tetris
