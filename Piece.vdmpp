@@ -15,7 +15,7 @@ values
 	public T_Shape_Piece: Type = <T>;
 	public Z_Shape_Piece: Type = <Z>;
 	public defaultSprites: SpriteMap = {
-		<I> |-> [mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(0, 1), mk_Coordinate(0, 2)],
+		<I> |-> [mk_Coordinate(-1, -1), mk_Coordinate(0, -1), mk_Coordinate(1, -1), mk_Coordinate(2, -1)],
 		<J> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 1)],
 		<L> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(1, 1)],
 		<S> |-> [mk_Coordinate(1, -1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 0)],

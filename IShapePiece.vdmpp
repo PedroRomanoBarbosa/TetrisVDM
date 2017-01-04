@@ -1,0 +1,19 @@
+class IShapePiece is subclass of PivotPiece
+
+operations
+	public IShapePiece: int * int * char ==> IShapePiece
+	IShapePiece(x, y, s) == (
+		PivotPiece(x, y, <I>, s);
+	);
+
+	public rotate: nat1 ==> ()
+	rotate(rot) == (
+		rotation(rot);
+		move(translation.x, translation.y);
+		cases rot:
+			3 -> move(1,-1),
+			4 -> move(-1,-1)
+		end;
+	);
+
+end IShapePiece
