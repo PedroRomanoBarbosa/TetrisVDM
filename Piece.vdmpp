@@ -7,13 +7,6 @@ types
 	public Sprite = seq of Coordinate;
 	
 values
-	public I_Shape_Piece: Type = <I>;
-	public J_Shape_Piece: Type = <J>;
-	public L_Shape_Piece: Type = <L>;
-	public O_Shape_Piece: Type = <O>;
-	public S_Shape_Piece: Type = <S>;
-	public T_Shape_Piece: Type = <T>;
-	public Z_Shape_Piece: Type = <Z>;
 	public defaultSprites: SpriteMap = {
 		<I> |-> [mk_Coordinate(-1, -1), mk_Coordinate(0, -1), mk_Coordinate(1, -1), mk_Coordinate(2, -1)],
 		<J> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 1)],
@@ -40,13 +33,15 @@ operations
 		move(x,y);
 	);
 	
-	public static createNewPiece: nat1 * nat1 * Type * char ==> Piece
-	createNewPiece(x, y, type, s) == (
-		if type <> O_Shape_Piece and type <> I_Shape_Piece then (
-			return new PivotPiece(x, y, type, s); 
-		) else (
-			return new Piece(x, y, type, s);
-		)
+	public static createNewPiece: Type * char ==> Piece
+	createNewPiece(type, s) == (
+		dcl p: Piece;
+		cases type:
+			<O> -> p := new Piece(0, 0, type, s),
+			<I> -> p := new IShapePiece(0, 0, s),
+			others -> p := new PivotPiece(0, 0, type, s)
+		end;
+		return p;
 	);
 	
 	public getTiles: () ==> seq of Coordinate

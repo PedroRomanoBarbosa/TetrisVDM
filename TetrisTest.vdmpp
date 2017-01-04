@@ -4,10 +4,8 @@ class TetrisTest
     public static main: () ==> ()
     main() == (
     	dcl tetris: Tetris := new Tetris(15, 10);
-    	dcl l: Piece := new IShapePiece(3, 3, 'I');
     	
-    	tetris.setCurrentPiece(l);
-    	tetris.rotateCurrentPiece(4);
+    	tetris.init();
     	
     	tetris.print();
     );

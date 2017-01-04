@@ -5,7 +5,8 @@ types
 	
 values
 	private EMPTY_TILE: char = ' ';
-	private PIECE_TYPES: seq of Piece`Type = [Piece`I_Shape_Piece];
+	private PIECE_TYPES: seq of Piece`Type = [<I>, <J>, <L>, <O>, <S>, <T>, <Z>];
+	private PIECE_SYMBOLS: seq of char = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
 instance variables
 	private rows: nat;
@@ -31,14 +32,15 @@ operations
 	pre r > c
 	post len table = r;
 	
-	public getRandomPiece: () ==> Piece`Type
-	getRandomPiece() == (
-		return PIECE_TYPES(MATH`rand(len PIECE_TYPES) + 1);
-	);
-	
-	public setCurrentPiece: Piece ==> ()
-	setCurrentPiece(p) == (
-		currentPiece := p;
+	public setRandomPiece: () ==> ()
+	setRandomPiece() == (
+		dcl rand: int := MATH`rand(len PIECE_TYPES) + 1;
+		dcl randRot: int := MATH`rand(4) + 1;
+		dcl positions: seq of nat1;
+		currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
+		currentPiece.rotate(randRot);
+		positions := getCurrentPieceHorizontalInitialPositions();
+		currentPiece.move(positions(MATH`rand(len positions) + 1), 5);
 		paintCurrentPiece();
 	);
 	
@@ -139,12 +141,15 @@ operations
 		);
 	);
 	
+	public init: () ==> ()
+	init() == (
+		setRandomPiece();
+	);
+	
 	public next: () ==> ()
 	next() == (
-		removeCurrentPiece();
-		moveCurrentPieceDown();
-		paintCurrentPiece();
-		print();
+		if not checkCurrentPieceDownCollision() then
+			moveCurrentPieceDown();
 	);
 	
 	private paintCurrentPiece: () ==> ()
@@ -162,6 +167,32 @@ operations
 		for pos in positions do (
 			table(pos.y)(pos.x) := symbol;
 		);
+	);
+	
+	private getCurrentPieceHorizontalInitialPositions: () ==> seq of nat1
+	getCurrentPieceHorizontalInitialPositions() == (
+		dcl positions: seq of nat1 := [];
+		dcl inc: nat1 := 1;
+		dcl result: bool * bool := checkBoardCollisionInX(inc);
+		while not result.#2 do (
+			if not result.#1 then (
+				positions := positions ^ [inc];
+			);
+			inc := inc + 1;
+			result := checkBoardCollisionInX(inc);
+		);
+		return positions;
+	);
+	
+	private checkBoardCollisionInX: nat1 ==> bool * bool
+	checkBoardCollisionInX(x) == (
+		dcl rightSideCollision: bool := false;
+		dcl leftSideCollision: bool := false;
+		for t in currentPiece.getTiles() do (
+			if t.x + x > columns then rightSideCollision := true;
+			if t.x + x <= 0  then leftSideCollision := true;
+		);
+		return mk_(leftSideCollision, rightSideCollision);
 	);
 	
 	private clearTable: () ==> ()
