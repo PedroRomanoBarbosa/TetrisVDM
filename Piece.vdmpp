@@ -80,16 +80,6 @@ operations
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
 	
-	public rotateRight: () ==> ()
-	rotateRight() == (
-		rotate(1);
-	);
-	
-	public rotateLeft: () ==> ()
-	rotateLeft() == (
-		rotate(1);
-	);
-	
 	public rotate: nat1 ==> ()
 	rotate(rot) == (
 		return;

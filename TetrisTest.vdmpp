@@ -9,7 +9,11 @@ class TetrisTest
   		for inc = 1 to 100 do (
   			tetris := new Tetris(15, 10);
 	  		tetris.init();
-	  		tetris.rotateLeft();
+	  		tetris.rotate();
+	  		tetris.rotate();
+	  		tetris.rotate();
+	  		tetris.rotate();
+	  		tetris.rotate();
 	  		tetris.moveCurrentPieceDown();
 	  		tetris.print();
   		);

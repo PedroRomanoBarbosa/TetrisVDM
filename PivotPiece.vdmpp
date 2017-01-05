@@ -21,26 +21,12 @@ operations
 		currentRotation := rot;
 	);
 	
-	public rotateRight: () ==> ()
-	rotateRight() == (
+	public rotate: nat1 ==> ()
+	rotate(rot) == (
 		if currentRotation = 4 then
 			currentRotation := 1
 		else
 			currentRotation := currentRotation + 1;
-		rotate(currentRotation);
-	);
-	
-	public rotateLeft: () ==> ()
-	rotateLeft() == (
-		if currentRotation = 1 then
-			currentRotation := 4
-		else
-			currentRotation := currentRotation - 1;
-		rotate(currentRotation);
-	);
-	
-	public rotate: nat1 ==> ()
-	rotate(rot) == (
 		rotation(rot);
 		move(translation.x, translation.y);
 	);

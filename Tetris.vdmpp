@@ -87,17 +87,9 @@ operations
 		moveCurrentPiece(1,0);
 	);
 	
-	public rotateLeft: () ==> ()
-	rotateLeft() == (
+	public rotate: () ==> ()
+	rotate() == (
 		removeCurrentPiece();
-		currentPiece.rotateLeft();
-		rotateCurrentPiece(currentPiece.getRotation());
-	);
-	
-	public rotateRight: () ==> ()
-	rotateRight() == (
-		removeCurrentPiece();
-		currentPiece.rotateRight();
 		rotateCurrentPiece(currentPiece.getRotation());
 	);
 	
