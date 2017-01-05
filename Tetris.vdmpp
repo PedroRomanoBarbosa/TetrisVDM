@@ -2,7 +2,6 @@ class Tetris
 
 types
 	public Row = seq of char;
-	public Command = <Right> | <Left> | <Up>;
 	
 values
 	private EMPTY_TILE: char = ' ';
