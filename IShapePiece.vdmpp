@@ -6,11 +6,10 @@ operations
 		PivotPiece(x, y, <I>, s);
 	);
 
-	public rotate: nat1 ==> ()
-	rotate(rot) == (
-		rotation(rot);
-		move(translation.x, translation.y);
-		cases rot:
+	public rotate: () ==> ()
+	rotate() == (
+		rotation();
+		cases currentRotation:
 			3 -> move(1,-1),
 			4 -> move(-1,-1)
 		end;

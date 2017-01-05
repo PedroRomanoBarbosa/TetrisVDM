@@ -42,11 +42,13 @@ operations
 		dcl randRot: int := MATH`rand(4) + 1;
 		dcl positions: seq of nat1;
 		currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
-		currentPiece.rotate(randRot);
+		currentPiece.rotate();
 		positions := getCurrentPieceHorizontalInitialPositions();
 		currentPiece.move(positions(MATH`rand(len positions) + 1), 0);
 		while checkBoardCollisionInY() do 
 			currentPiece.move(0, 1);
+		currentPiece.move(0, 1);
+		currentPiece.move(0, 1);
 		paintCurrentPiece();
 	);
 	
@@ -55,9 +57,9 @@ operations
 		return finished;
 	);
 	
-	public getBoard: () ==> seq of Row
-	getBoard() == (
-		return table;
+	public getTile: nat1 * nat1 ==> char
+	getTile(x,y) == (
+		return table(y)(x);
 	);
 	
 	private moveCurrentPiece: int * int ==> ()
@@ -70,6 +72,7 @@ operations
 	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
 			moveCurrentPiece(0,1);
+			next();
 	);
 	
 	public moveCurrentPieceUp: () ==> ()
@@ -90,14 +93,15 @@ operations
 	public rotate: () ==> ()
 	rotate() == (
 		removeCurrentPiece();
-		rotateCurrentPiece(currentPiece.getRotation());
+		rotateCurrentPiece();
 	);
 	
-	private rotateCurrentPiece: nat1 ==> ()
-	rotateCurrentPiece(rot) == (
+	private rotateCurrentPiece: () ==> ()
+	rotateCurrentPiece() == (
 		dcl originalTranslation: Piece`Coordinate := currentPiece.getTranslation();
 		dcl originalRot: nat1 := currentPiece.getRotation();
 		dcl valid: bool := false;
+		currentPiece.rotate();
 		while not valid do (
 			dcl boardCheck: bool * bool * bool * bool := checkBoardOverlap();
 			if boardCheck.#1 or boardCheck.#2 or boardCheck.#3 or boardCheck.#4 then (
@@ -110,9 +114,8 @@ operations
 			);
 		);
 		if checkOverlap() then (
+			currentPiece.setRotation(originalRot);
 			currentPiece.setTranslation(originalTranslation.x, originalTranslation.y);
-			currentPiece.rotate(originalRot);
-			paintCurrentPiece();
 		);
 		paintCurrentPiece();
 	);
@@ -200,10 +203,10 @@ operations
 	public next: () ==> ()
 	next() == (
 		if checkDownCollision(currentPiece.getSprite()) then (
+			IO`print("COLLISION!");
 			checkLines();
-		) else (
-			moveCurrentPieceDown();
-		)
+			setRandomPiece();
+		) else (IO`print("NO COLLISION!");)
 	);
 	
 	public paintCurrentPiece: () ==> ()

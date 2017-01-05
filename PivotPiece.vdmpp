@@ -1,7 +1,7 @@
 class PivotPiece is subclass of Piece
 
 instance variables
-	private currentRotation: nat1;
+	protected currentRotation: nat1;
 
 operations
 
@@ -19,30 +19,30 @@ operations
 	public setRotation: nat1 ==> ()
 	setRotation(rot) == (
 		currentRotation := rot;
+		rotation();
 	);
 	
-	public rotate: nat1 ==> ()
-	rotate(rot) == (
+	public rotate: () ==> ()
+	rotate() == (
+		rotation();
+	);
+	
+	protected rotation: () ==> ()
+	rotation() == (
 		if currentRotation = 4 then
 			currentRotation := 1
 		else
 			currentRotation := currentRotation + 1;
-		rotation(rot);
-		move(translation.x, translation.y);
+		sprite := rotateSprite(originalTiles);
+		setTranslation(translation.x, translation.y);
 	);
 	
-	protected rotation: nat1 ==> ()
-	rotation(rot) == (
-		currentRotation := rot;
-		sprite := rotateSprite(originalTiles, rot);
-	);
-	
-	protected rotateSprite: Sprite * nat1 ==> Sprite
-	rotateSprite(sp, rot) == (
+	protected rotateSprite: Sprite ==> Sprite
+	rotateSprite(sp) == (
 		dcl newSp: Sprite := sp;
 		for inc = 1 to len sp do (
-			 newSp(inc).x := sp(inc).x * cos(rot) + sp(inc).y * sin(rot);
-			 newSp(inc).y := sp(inc).y * cos(rot) - sp(inc).x * sin(rot);
+			 newSp(inc).x := sp(inc).x * cos(currentRotation) + sp(inc).y * sin(currentRotation);
+			 newSp(inc).y := sp(inc).y * cos(currentRotation) - sp(inc).x * sin(currentRotation);
 		);
 		return newSp;
 	);

@@ -6,17 +6,21 @@ class TetrisTest
     	dcl tetris: Tetris := new Tetris(15, 10);
     	
   		dcl sp: Piece`Sprite;
-  		for inc = 1 to 100 do (
-  			tetris := new Tetris(15, 10);
-	  		tetris.init();
-	  		tetris.rotate();
-	  		tetris.rotate();
-	  		tetris.rotate();
-	  		tetris.rotate();
-	  		tetris.rotate();
-	  		tetris.moveCurrentPieceDown();
-	  		tetris.print();
-  		);
+			tetris := new Tetris(15, 10);
+  		tetris.init();
+  		tetris.print();
+  		
+  		--tetris.rotate();
+  		tetris.rotate();
+  		tetris.print();
+  		
+  		--tetris.rotate();
+  		tetris.rotate();
+  		tetris.print();
+  		
+  		--tetris.rotate();
+  		tetris.rotate();
+  		tetris.print();
     );
     
 end TetrisTest

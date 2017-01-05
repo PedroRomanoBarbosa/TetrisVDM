@@ -58,6 +58,7 @@ operations
 	setTranslation(x, y) == (
 		translation.x := x;
 		translation.y := y;
+		sprite := translateSprite(sprite, x, y);
 	);
 	
 	public move: int * int ==> ()
@@ -80,8 +81,8 @@ operations
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
 	
-	public rotate: nat1 ==> ()
-	rotate(rot) == (
+	public rotate: () ==> ()
+	rotate() == (
 		return;
 	);
 	
