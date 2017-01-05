@@ -2,6 +2,7 @@ class Tetris
 
 types
 	public Row = seq of char;
+	public Command = <Right> | <Left> | <Up>;
 	
 values
 	private EMPTY_TILE: char = ' ';
@@ -9,14 +10,18 @@ values
 	private PIECE_SYMBOLS: seq of char = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
 instance variables
+	private finished: bool;
+	private linesCleared: nat;
 	private rows: nat;
 	private columns: nat;
 	private table: seq of Row;
-	private currentPiece: Piece;
+	public currentPiece: Piece;
 	
 operations
 	public Tetris: nat * nat ==> Tetris
 	Tetris(r,c) == (
+		finished := false;
+		linesCleared := 0;
 		rows := r;
 		columns := c;
 		table := [];
@@ -32,7 +37,7 @@ operations
 	pre r > c
 	post len table = r;
 	
-	public setRandomPiece: () ==> ()
+	private setRandomPiece: () ==> ()
 	setRandomPiece() == (
 		dcl rand: int := MATH`rand(len PIECE_TYPES) + 1;
 		dcl randRot: int := MATH`rand(4) + 1;
@@ -40,13 +45,20 @@ operations
 		currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
 		currentPiece.rotate(randRot);
 		positions := getCurrentPieceHorizontalInitialPositions();
-		currentPiece.move(positions(MATH`rand(len positions) + 1), 5);
+		currentPiece.move(positions(MATH`rand(len positions) + 1), 0);
+		while checkBoardCollisionInY() do 
+			currentPiece.move(0, 1);
 		paintCurrentPiece();
 	);
 	
-	public getTile: nat1 * nat1 ==> char
-	getTile(x,y) == (
-		return table(y)(x);
+	public isGameFinished: () ==> bool
+	isGameFinished() == (
+		return finished;
+	);
+	
+	public getBoard: () ==> seq of Row
+	getBoard() == (
+		return table;
 	);
 	
 	private moveCurrentPiece: int * int ==> ()
@@ -61,6 +73,11 @@ operations
 			moveCurrentPiece(0,1);
 	);
 	
+	public moveCurrentPieceUp: () ==> ()
+	moveCurrentPieceUp() == (
+			moveCurrentPiece(0,-1);
+	);
+	
 	public moveCurrentPieceLeft: () ==> ()
 	moveCurrentPieceLeft() == (
 		moveCurrentPiece(-1,0);
@@ -71,19 +88,72 @@ operations
 		moveCurrentPiece(1,0);
 	);
 	
-	public rotateCurrentPiece: nat1 ==> ()
-	rotateCurrentPiece(rot) == (
+	public rotateLeft: () ==> ()
+	rotateLeft() == (
 		removeCurrentPiece();
-		currentPiece.rotate(rot);
+		currentPiece.rotateLeft();
+		rotateCurrentPiece(currentPiece.getRotation());
+	);
+	
+	public rotateRight: () ==> ()
+	rotateRight() == (
+		removeCurrentPiece();
+		currentPiece.rotateRight();
+		rotateCurrentPiece(currentPiece.getRotation());
+	);
+	
+	private rotateCurrentPiece: nat1 ==> ()
+	rotateCurrentPiece(rot) == (
+		dcl originalTranslation: Piece`Coordinate := currentPiece.getTranslation();
+		dcl originalRot: nat1 := currentPiece.getRotation();
+		dcl valid: bool := false;
+		while not valid do (
+			dcl boardCheck: bool * bool * bool * bool := checkBoardOverlap();
+			if boardCheck.#1 or boardCheck.#2 or boardCheck.#3 or boardCheck.#4 then (
+				if boardCheck.#1 then currentPiece.move(0, 1);
+				if boardCheck.#2 then currentPiece.move(0, -1);
+				if boardCheck.#3 then currentPiece.move(1, 0);
+				if boardCheck.#4 then currentPiece.move(-1, 0);
+			) else (
+				valid := true;
+			);
+		);
+		if checkOverlap() then (
+			currentPiece.setTranslation(originalTranslation.x, originalTranslation.y);
+			currentPiece.rotate(originalRot);
+			paintCurrentPiece();
+		);
 		paintCurrentPiece();
 	);
 	
-	public checkCurrentPieceDownCollision: () ==> bool
-	checkCurrentPieceDownCollision() == (
-		dcl sprite: Piece`Sprite := currentPiece.getTiles();
-		for tile in sprite do (
+	private checkBoardOverlap: () ==> bool * bool * bool * bool
+	checkBoardOverlap() == (
+		dcl up: bool := false;
+		dcl down: bool := false;
+		dcl left: bool := false;
+		dcl right: bool := false;
+		for tile in currentPiece.getSprite() do (
+			if tile.y < 1 then up := true;
+			if tile.x < 1 then left := true;
+			if tile.x > columns then right := true;
+			if tile.y > rows then down := true;
+		);
+		return mk_(up, down, left, right);
+	);
+	
+	private checkOverlap: () ==> bool
+	checkOverlap() == (
+		for tile in currentPiece.getSprite() do (
+			if table(tile.y)(tile.x) <> ' ' then return true;
+		);
+		return false;
+	);
+	
+	public checkDownCollision: Piece`Sprite ==> bool
+	checkDownCollision(sp) == (
+		for tile in sp do (
 			if tile.y <> rows then (
-				if table(tile.y + 1)(tile.x) <> ' ' and mk_Piece`Coordinate(tile.x, tile.y + 1) not in set elems sprite then
+				if table(tile.y + 1)(tile.x) <> ' ' and mk_Piece`Coordinate(tile.x, tile.y + 1) not in set elems sp then
 					return true;
 			) else
 				return true;
@@ -91,12 +161,11 @@ operations
 		return false;
 	);
 	
-	public checkCurrentPieceRightCollision: () ==> bool
-	checkCurrentPieceRightCollision() == (
-		dcl sprite: Piece`Sprite := currentPiece.getTiles();
-		for tile in sprite do (
+	public checkRightCollision: Piece`Sprite ==> bool
+	checkRightCollision(sp) == (
+		for tile in sp do (
 			if tile.x <> columns then (
-				if table(tile.y)(tile.x + 1) <> ' ' and mk_Piece`Coordinate(tile.x + 1, tile.y) not in set elems sprite then
+				if table(tile.y)(tile.x + 1) <> ' ' and mk_Piece`Coordinate(tile.x + 1, tile.y) not in set elems sp then
 					return true;
 			) else
 				return true;
@@ -104,12 +173,11 @@ operations
 		return false;
 	);
 	
-	public checkCurrentPieceLeftCollision: () ==> bool
-	checkCurrentPieceLeftCollision() == (
-		dcl sprite: Piece`Sprite := currentPiece.getTiles();
-		for tile in sprite do (
+	public checkLeftCollision: Piece`Sprite ==> bool
+	checkLeftCollision(sp) == (
+		for tile in sp do (
 			if tile.x <> 1 then (
-				if table(tile.y)(tile.x - 1) <> ' ' and mk_Piece`Coordinate(tile.x - 1, tile.y) not in set elems sprite then
+				if table(tile.y)(tile.x - 1) <> ' ' and mk_Piece`Coordinate(tile.x - 1, tile.y) not in set elems sp then
 					return true;
 			) else
 				return true;
@@ -119,22 +187,14 @@ operations
 	
 	public drop: () ==> ()
 	drop() == (
-		while not checkCurrentPieceDownCollision() do moveCurrentPieceDown();
+		while not checkDownCollision(currentPiece.getSprite()) do moveCurrentPieceDown();
 	);
 	
-	public pushLeft: () ==> ()
-	pushLeft() == (
-		while not checkCurrentPieceLeftCollision() do moveCurrentPieceLeft();
-	);
-	
-	public pushRight: () ==> ()
-	pushRight() == (
-		while not checkCurrentPieceRightCollision() do moveCurrentPieceRight();
-	);
-	
-	public checkLines: () ==> ()
+	private checkLines: () ==> ()
 	checkLines() == (
+		dcl completeRows: seq of Row := [ r | r in seq table & ' ' not in set elems r];
 		dcl incompleteRows: seq of Row := [ r | r in seq table & ' ' in set elems r];
+		linesCleared := linesCleared + len completeRows;
 		clearTable();
 		for inc = 1 to len incompleteRows do (
 			table(inc) := incompleteRows(inc);
@@ -148,18 +208,21 @@ operations
 	
 	public next: () ==> ()
 	next() == (
-		if not checkCurrentPieceDownCollision() then
+		if checkDownCollision(currentPiece.getSprite()) then (
+			checkLines();
+		) else (
 			moveCurrentPieceDown();
+		)
 	);
 	
-	private paintCurrentPiece: () ==> ()
+	public paintCurrentPiece: () ==> ()
 	paintCurrentPiece() == (
-		paint(currentPiece.getTiles(), currentPiece.getSymbol());
+		paint(currentPiece.getSprite(), currentPiece.getSymbol());
 	);
 	
-	private removeCurrentPiece: () ==> ()
+	public removeCurrentPiece: () ==> ()
 	removeCurrentPiece() == (
-		paint(currentPiece.getTiles(), ' ');
+		paint(currentPiece.getSprite(), ' ');
 	);
 	
 	private paint: seq of Piece`Coordinate * char ==> ()
@@ -188,11 +251,19 @@ operations
 	checkBoardCollisionInX(x) == (
 		dcl rightSideCollision: bool := false;
 		dcl leftSideCollision: bool := false;
-		for t in currentPiece.getTiles() do (
+		for t in currentPiece.getSprite() do (
 			if t.x + x > columns then rightSideCollision := true;
 			if t.x + x <= 0  then leftSideCollision := true;
 		);
 		return mk_(leftSideCollision, rightSideCollision);
+	);
+	
+	private checkBoardCollisionInY: () ==> bool
+	checkBoardCollisionInY() == (
+		for t in currentPiece.getSprite() do (
+			if t.y <= 0 then return true;
+		);
+		return false;
 	);
 	
 	private clearTable: () ==> ()

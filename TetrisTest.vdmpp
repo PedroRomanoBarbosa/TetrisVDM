@@ -5,9 +5,14 @@ class TetrisTest
     main() == (
     	dcl tetris: Tetris := new Tetris(15, 10);
     	
-    	tetris.init();
-    	
-    	tetris.print();
+  		dcl sp: Piece`Sprite;
+  		for inc = 1 to 100 do (
+  			tetris := new Tetris(15, 10);
+	  		tetris.init();
+	  		tetris.rotateLeft();
+	  		tetris.moveCurrentPieceDown();
+	  		tetris.print();
+  		);
     );
     
 end TetrisTest

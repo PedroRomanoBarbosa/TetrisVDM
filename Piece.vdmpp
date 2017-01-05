@@ -7,7 +7,7 @@ types
 	public Sprite = seq of Coordinate;
 	
 values
-	public defaultSprites: SpriteMap = {
+	public DEFAULT_SPRITES: SpriteMap = {
 		<I> |-> [mk_Coordinate(-1, -1), mk_Coordinate(0, -1), mk_Coordinate(1, -1), mk_Coordinate(2, -1)],
 		<J> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(-1, 1)],
 		<L> |-> [mk_Coordinate(0, 1), mk_Coordinate(0, -1), mk_Coordinate(0, 0), mk_Coordinate(1, 1)],
@@ -27,8 +27,8 @@ operations
 	public Piece: int * int * Type * char ==> Piece
 	Piece(x,y,t,s) == (
 		symbol := s;
-		originalTiles := defaultSprites(t);
-		sprite := defaultSprites(t);
+		originalTiles := DEFAULT_SPRITES(t);
+		sprite := DEFAULT_SPRITES(t);
 		translation := mk_Coordinate(0, 0);
 		move(x,y);
 	);
@@ -44,26 +44,64 @@ operations
 		return p;
 	);
 	
-	public getTiles: () ==> seq of Coordinate
-	getTiles () == (
+	public getSprite: () ==> Sprite
+	getSprite () == (
 		return sprite;
+	);
+	
+	public getTranslation: () ==> Coordinate
+	getTranslation() == (
+		return translation;
+	);
+	
+	public setTranslation: int * int ==> ()
+	setTranslation(x, y) == (
+		translation.x := x;
+		translation.y := y;
 	);
 	
 	public move: int * int ==> ()
 	move(x,y) == (
 		translation.x := translation.x + x;
 		translation.y := translation.y + y;
-		for inc = 1 to len sprite do (
-			sprite(inc).x := sprite(inc).x + x;
-			sprite(inc).y := sprite(inc).y + y;
+		sprite := translateSprite(sprite, x, y);
+	);
+	
+	protected translateSprite: Sprite * int * int ==> Sprite
+	translateSprite(sp, x, y) == (
+		dcl newSp: Sprite := sp;
+		for inc = 1 to len sp do (
+			newSp(inc).x := sp(inc).x + x;
+			newSp(inc).y := sp(inc).y + y;
 		);
+		return newSp;
 	);
 	
 	public getSymbol : () ==> char
 	getSymbol () == return symbol;
 	
+	public rotateRight: () ==> ()
+	rotateRight() == (
+		rotate(1);
+	);
+	
+	public rotateLeft: () ==> ()
+	rotateLeft() == (
+		rotate(1);
+	);
+	
 	public rotate: nat1 ==> ()
 	rotate(rot) == (
+		return;
+	);
+	
+	public getRotation: () ==> nat1
+	getRotation() == (
+		return 1;
+	);
+	
+	public setRotation: nat1 ==> ()
+	setRotation(rot) == (
 		return;
 	);
 	

@@ -11,13 +11,32 @@ operations
 		Piece(x, y, t, s);
 	);
 	
-	protected rotation: nat1 ==> ()
-	rotation(rot) == (
+	public getRotation: () ==> nat1
+	getRotation() == (
+		return 1;
+	);
+	
+	public setRotation: nat1 ==> ()
+	setRotation(rot) == (
 		currentRotation := rot;
-		for inc = 1 to len sprite do (
-			 sprite(inc).x := originalTiles(inc).x * cos(rot) + originalTiles(inc).y * sin(rot);
-			 sprite(inc).y := originalTiles(inc).y * cos(rot) - originalTiles(inc).x * sin(rot);
-		);
+	);
+	
+	public rotateRight: () ==> ()
+	rotateRight() == (
+		if currentRotation = 4 then
+			currentRotation := 1
+		else
+			currentRotation := currentRotation + 1;
+		rotate(currentRotation);
+	);
+	
+	public rotateLeft: () ==> ()
+	rotateLeft() == (
+		if currentRotation = 1 then
+			currentRotation := 4
+		else
+			currentRotation := currentRotation - 1;
+		rotate(currentRotation);
 	);
 	
 	public rotate: nat1 ==> ()
@@ -26,7 +45,23 @@ operations
 		move(translation.x, translation.y);
 	);
 	
-	private cos: nat1 ==> int
+	protected rotation: nat1 ==> ()
+	rotation(rot) == (
+		currentRotation := rot;
+		sprite := rotateSprite(originalTiles, rot);
+	);
+	
+	protected rotateSprite: Sprite * nat1 ==> Sprite
+	rotateSprite(sp, rot) == (
+		dcl newSp: Sprite := sp;
+		for inc = 1 to len sp do (
+			 newSp(inc).x := sp(inc).x * cos(rot) + sp(inc).y * sin(rot);
+			 newSp(inc).y := sp(inc).y * cos(rot) - sp(inc).x * sin(rot);
+		);
+		return newSp;
+	);
+	
+	private static cos: nat1 ==> int
 	cos(rot) == (
 		dcl cos: int := 0;
 		cases rot:
@@ -40,7 +75,7 @@ operations
 	pre rot < 5
 	post RESULT = 0 or RESULT = 1 or RESULT = -1;
 	
-	private sin: nat1 ==> int
+	private static sin: nat1 ==> int
 	sin(rot) == (
 		dcl cos: int := 0;
 		cases rot:
