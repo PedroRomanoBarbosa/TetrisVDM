@@ -9,17 +9,7 @@ class TetrisTest
 			tetris := new Tetris(15, 10);
   		tetris.init();
   		tetris.print();
-  		
-  		--tetris.rotate();
-  		tetris.rotate();
-  		tetris.print();
-  		
-  		--tetris.rotate();
-  		tetris.rotate();
-  		tetris.print();
-  		
-  		--tetris.rotate();
-  		tetris.rotate();
+  		tetris.drop();
   		tetris.print();
     );
     

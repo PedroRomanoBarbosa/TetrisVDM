@@ -14,7 +14,7 @@ instance variables
 	private rows: nat;
 	private columns: nat;
 	private table: seq of Row;
-	public currentPiece: Piece;
+	private currentPiece: Piece;
 	
 operations
 	public Tetris: nat * nat ==> Tetris
@@ -42,13 +42,19 @@ operations
 		dcl randRot: int := MATH`rand(4) + 1;
 		dcl positions: seq of nat1;
 		currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
-		currentPiece.rotate();
+		for inc = 1 to randRot do 
+			currentPiece.rotate();
 		positions := getCurrentPieceHorizontalInitialPositions();
 		currentPiece.move(positions(MATH`rand(len positions) + 1), 0);
-		while checkBoardCollisionInY() do 
-			currentPiece.move(0, 1);
-		currentPiece.move(0, 1);
-		currentPiece.move(0, 1);
+		if checkOverlap() then finished := true;
+		while checkBoardCollisionInY() do (
+				currentPiece.move(0, 1);
+		);
+		if checkOverlap() or checkDownCollision(currentPiece.getSprite()) then (
+			finished := true;
+			while checkOverlap() do
+					currentPiece.move(0, -1);
+		);
 		paintCurrentPiece();
 	);
 	
@@ -62,6 +68,24 @@ operations
 		return table(y)(x);
 	);
 	
+	public getLinesCleared: () ==> nat1
+	getLinesCleared() == (
+		return linesCleared;
+	);
+	
+		public init: () ==> ()
+		init() == (
+			setRandomPiece();
+		);
+	
+		public next: () ==> ()
+		next() == (
+			if checkDownCollision(currentPiece.getSprite()) then (
+				checkLines();
+				setRandomPiece();
+			);
+		);
+	
 	private moveCurrentPiece: int * int ==> ()
 	moveCurrentPiece(x,y) == (
 		removeCurrentPiece();
@@ -71,7 +95,8 @@ operations
 	
 	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
-			moveCurrentPiece(0,1);
+			if not checkDownCollision(currentPiece.getSprite()) then
+				moveCurrentPiece(0,1);
 			next();
 	);
 	
@@ -82,12 +107,14 @@ operations
 	
 	public moveCurrentPieceLeft: () ==> ()
 	moveCurrentPieceLeft() == (
-		moveCurrentPiece(-1,0);
+		if not checkLeftCollision(currentPiece.getSprite()) then
+			moveCurrentPiece(-1,0);
 	);
 	
 	public moveCurrentPieceRight: () ==> ()
 	moveCurrentPieceRight() == (
-		moveCurrentPiece(1,0);
+		if not checkRightCollision(currentPiece.getSprite()) then
+			moveCurrentPiece(1,0);
 	);
 	
 	public rotate: () ==> ()
@@ -138,7 +165,8 @@ operations
 	private checkOverlap: () ==> bool
 	checkOverlap() == (
 		for tile in currentPiece.getSprite() do (
-			if table(tile.y)(tile.x) <> ' ' then return true;
+			if tile.y > 0 and tile.y <= rows and tile.x > 0 and tile.x <= columns then
+				if table(tile.y)(tile.x) <> ' ' then return true;
 		);
 		return false;
 	);
@@ -146,7 +174,7 @@ operations
 	public checkDownCollision: Piece`Sprite ==> bool
 	checkDownCollision(sp) == (
 		for tile in sp do (
-			if tile.y <> rows then (
+			if tile.y <> rows and tile.y > 0 then (
 				if table(tile.y + 1)(tile.x) <> ' ' and mk_Piece`Coordinate(tile.x, tile.y + 1) not in set elems sp then
 					return true;
 			) else
@@ -181,32 +209,21 @@ operations
 	
 	public drop: () ==> ()
 	drop() == (
-		while not checkDownCollision(currentPiece.getSprite()) do moveCurrentPieceDown();
+		while not checkDownCollision(currentPiece.getSprite()) do
+			moveCurrentPiece(0,1);
+		next();
 	);
 	
 	private checkLines: () ==> ()
 	checkLines() == (
 		dcl completeRows: seq of Row := [ r | r in seq table & ' ' not in set elems r];
 		dcl incompleteRows: seq of Row := [ r | r in seq table & ' ' in set elems r];
-		linesCleared := linesCleared + len completeRows;
+		dcl newLines: int := len completeRows;
 		clearTable();
 		for inc = 1 to len incompleteRows do (
-			table(inc) := incompleteRows(inc);
+			table(inc + newLines) := incompleteRows(inc);
 		);
-	);
-	
-	public init: () ==> ()
-	init() == (
-		setRandomPiece();
-	);
-	
-	public next: () ==> ()
-	next() == (
-		if checkDownCollision(currentPiece.getSprite()) then (
-			IO`print("COLLISION!");
-			checkLines();
-			setRandomPiece();
-		) else (IO`print("NO COLLISION!");)
+		linesCleared := linesCleared + newLines;
 	);
 	
 	public paintCurrentPiece: () ==> ()
@@ -222,7 +239,8 @@ operations
 	private paint: seq of Piece`Coordinate * char ==> ()
 	paint(positions, symbol) == (
 		for pos in positions do (
-			table(pos.y)(pos.x) := symbol;
+			if pos.y > 0 and pos.y <= rows and pos.x > 0 and pos.x <= columns then
+ 				table(pos.y)(pos.x) := symbol;
 		);
 	);
 	
