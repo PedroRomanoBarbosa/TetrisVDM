@@ -10,8 +10,9 @@ operations
 	rotate() == (
 		rotation();
 		cases currentRotation:
-			3 -> move(1,-1),
-			4 -> move(-1,-1)
+			2 -> sprite := translateSprite(sprite, 1, 0),
+			3 -> sprite := translateSprite(sprite, 1, -1),
+			4 -> sprite := translateSprite(sprite, -1, -1)
 		end;
 	);
 
