@@ -13,4 +13,9 @@ class TetrisTest
   		tetris.print();
     );
     
+    public test1: () ==> ()
+    test1() == (
+    	return ;
+    );
+    
 end TetrisTest

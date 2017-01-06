@@ -73,18 +73,18 @@ operations
 		return linesCleared;
 	);
 	
-		public init: () ==> ()
-		init() == (
+	public init: () ==> ()
+	init() == (
+		setRandomPiece();
+	);
+
+	public next: () ==> ()
+	next() == (
+		if checkDownCollision(currentPiece.getSprite()) then (
+			checkLines();
 			setRandomPiece();
 		);
-	
-		public next: () ==> ()
-		next() == (
-			if checkDownCollision(currentPiece.getSprite()) then (
-				checkLines();
-				setRandomPiece();
-			);
-		);
+	);
 	
 	private moveCurrentPiece: int * int ==> ()
 	moveCurrentPiece(x,y) == (
@@ -95,9 +95,11 @@ operations
 	
 	public moveCurrentPieceDown: () ==> ()
 	moveCurrentPieceDown() == (
-			if not checkDownCollision(currentPiece.getSprite()) then
-				moveCurrentPiece(0,1);
+		if not checkDownCollision(currentPiece.getSprite()) then (
+			moveCurrentPiece(0,1);
+		) else (
 			next();
+		);
 	);
 	
 	public moveCurrentPieceUp: () ==> ()
@@ -128,17 +130,18 @@ operations
 		dcl originalTranslation: Piece`Coordinate := currentPiece.getTranslation();
 		dcl originalRot: nat1 := currentPiece.getRotation();
 		dcl valid: bool := false;
+		dcl boardCheck: bool * bool * bool * bool;
 		currentPiece.rotate();
 		while not valid do (
-			dcl boardCheck: bool * bool * bool * bool := checkBoardOverlap();
-			if boardCheck.#1 or boardCheck.#2 or boardCheck.#3 or boardCheck.#4 then (
+			boardCheck := checkBoardOverlap();
+			if boardCheck = mk_(false, false, false, false) then (
+				valid := true;
+			) else (
 				if boardCheck.#1 then currentPiece.move(0, 1);
 				if boardCheck.#2 then currentPiece.move(0, -1);
 				if boardCheck.#3 then currentPiece.move(1, 0);
 				if boardCheck.#4 then currentPiece.move(-1, 0);
-			) else (
-				valid := true;
-			);
+			)
 		);
 		if checkOverlap() then (
 			currentPiece.setRotation(originalRot);

@@ -13,13 +13,13 @@ operations
 	
 	public getRotation: () ==> nat1
 	getRotation() == (
-		return 1;
+		return currentRotation;
 	);
 	
 	public setRotation: nat1 ==> ()
 	setRotation(rot) == (
 		currentRotation := rot;
-		rotation();
+		sprite := rotateSprite(originalTiles);
 	);
 	
 	public rotate: () ==> ()
@@ -34,7 +34,7 @@ operations
 		else
 			currentRotation := currentRotation + 1;
 		sprite := rotateSprite(originalTiles);
-		setTranslation(translation.x, translation.y);
+		sprite := translateSprite(sprite, translation.x, translation.y);
 	);
 	
 	protected rotateSprite: Sprite ==> Sprite
