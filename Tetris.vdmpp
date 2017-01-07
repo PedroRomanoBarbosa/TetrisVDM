@@ -15,10 +15,13 @@ instance variables
 	private columns: nat;
 	private table: seq of Row;
 	private currentPiece: Piece;
+	private nextPiece: Piece;
+	private beginning: bool;
 	
 operations
 	public Tetris: nat * nat ==> Tetris
 	Tetris(r,c) == (
+		beginning := true;
 		finished := false;
 		linesCleared := 0;
 		rows := r;
@@ -39,9 +42,17 @@ operations
 	private setRandomPiece: () ==> ()
 	setRandomPiece() == (
 		dcl rand: int := MATH`rand(len PIECE_TYPES) + 1;
+		dcl randNext: int := MATH`rand(len PIECE_TYPES) + 1;
 		dcl randRot: int := MATH`rand(4) + 1;
 		dcl positions: seq of nat1;
-		currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
+		if beginning then (
+			currentPiece := Piece`createNewPiece(PIECE_TYPES(rand), PIECE_SYMBOLS(rand));
+			nextPiece := Piece`createNewPiece(PIECE_TYPES(randNext), PIECE_SYMBOLS(randNext));
+			beginning := false;
+		) else (
+			currentPiece := nextPiece;
+			nextPiece := Piece`createNewPiece(PIECE_TYPES(randNext), PIECE_SYMBOLS(randNext));
+		);
 		for inc = 1 to randRot do 
 			currentPiece.rotate();
 		positions := getCurrentPieceHorizontalInitialPositions();
@@ -61,6 +72,11 @@ operations
 	public isGameFinished: () ==> bool
 	isGameFinished() == (
 		return finished;
+	);
+	
+	public getCurrentPiece: () ==> Piece
+	getCurrentPiece() == (
+		return currentPiece;
 	);
 	
 	public getTile: nat1 * nat1 ==> char
@@ -150,7 +166,7 @@ operations
 		paintCurrentPiece();
 	);
 	
-	private checkBoardOverlap: () ==> bool * bool * bool * bool
+	public checkBoardOverlap: () ==> bool * bool * bool * bool
 	checkBoardOverlap() == (
 		dcl up: bool := false;
 		dcl down: bool := false;
@@ -165,7 +181,7 @@ operations
 		return mk_(up, down, left, right);
 	);
 	
-	private checkOverlap: () ==> bool
+	public checkOverlap: () ==> bool
 	checkOverlap() == (
 		for tile in currentPiece.getSprite() do (
 			if tile.y > 0 and tile.y <= rows and tile.x > 0 and tile.x <= columns then
@@ -214,7 +230,6 @@ operations
 	drop() == (
 		while not checkDownCollision(currentPiece.getSprite()) do
 			moveCurrentPiece(0,1);
-		next();
 	);
 	
 	private checkLines: () ==> ()

@@ -3,19 +3,211 @@ class TetrisTest
 	operations
     public static main: () ==> ()
     main() == (
-    	dcl tetris: Tetris := new Tetris(15, 10);
+    	dcl tetrisTest: TetrisTest := new TetrisTest();
     	
-  		dcl sp: Piece`Sprite;
-			tetris := new Tetris(15, 10);
-  		tetris.init();
-  		tetris.print();
-  		tetris.drop();
-  		tetris.print();
+    	-- Game Tests
+    	tetrisTest.testGame();
+    	tetrisTest.testRandomCommands();
+    	
+    	-- Piece Tests
+    	tetrisTest.testPiece();
+    	
+    	-- PivotPieceTests
+    	tetrisTest.testPivotPiece();
+    	
+    	-- LShapePiece Tests
+    	tetrisTest.testIShapePiece();
+    	
     );
     
-    public test1: () ==> ()
-    test1() == (
-    	return ;
+    private assertTrue: bool ==> ()
+    assertTrue(cond) == (
+    	return;
+    )
+    pre cond;
+    
+    /* Check if a game always finishes with a certain command pattern in the game 
+    * with random piece generation.
+    */
+    public testGame: () ==> ()
+    testGame() == (
+    	dcl tetris: Tetris;
+			for iter = 1 to 100 do (
+				tetris := new Tetris(15, 10);
+				tetris.init();
+				while not tetris.isGameFinished() do (
+					dcl lastTranslation: Piece`Coordinate;
+					dcl lastRotation: nat1;
+					dcl nextRotation: nat1;
+					
+					-- Test move piece down
+					lastTranslation := tetris.getCurrentPiece().getTranslation();
+					tetris.moveCurrentPieceDown();
+					assertTrue(
+						tetris.getCurrentPiece().getTranslation().y = lastTranslation.y + 1
+						or tetris.getCurrentPiece().getTranslation().y = lastTranslation.y);
+						
+					-- Test move piece left
+					lastTranslation := tetris.getCurrentPiece().getTranslation();
+					tetris.moveCurrentPieceLeft();
+					assertTrue(
+						tetris.getCurrentPiece().getTranslation().x = lastTranslation.x - 1
+						or tetris.getCurrentPiece().getTranslation().x = lastTranslation.x);
+						
+					-- Test move piece right
+					lastTranslation := tetris.getCurrentPiece().getTranslation();
+					tetris.moveCurrentPieceRight();
+					assertTrue(
+						tetris.getCurrentPiece().getTranslation().x = lastTranslation.x + 1
+						or tetris.getCurrentPiece().getTranslation().x = lastTranslation.x);
+					
+					-- Test Rotation
+					for inc = 1 to 5 do (
+						lastRotation := tetris.getCurrentPiece().getRotation();
+						tetris.rotate();
+						if lastRotation = 4 then
+							nextRotation := 1
+						else
+							nextRotation := lastRotation + 1;
+						assertTrue(
+							nextRotation = tetris.getCurrentPiece().getRotation()
+							or tetris.getCurrentPiece().getRotation() = lastRotation
+						);
+					);
+					
+					-- Test drop piece
+					tetris.drop();
+					assertTrue(tetris.checkDownCollision(tetris.getCurrentPiece().getSprite()));
+					tetris.next();
+				);
+			);
+    );
+    
+    -- Tests random commands
+    public testRandomCommands: () ==> ()
+    testRandomCommands() == (
+    	dcl tetris: Tetris := new Tetris(15, 10);
+			for inc = 1 to 100 do (
+				tetris := new Tetris(15, 10);
+				tetris.init();
+				while not tetris.isGameFinished() do (
+					randomCommand(tetris);
+				);
+			);
+    	return;
+    );
+    
+    private randomCommand: Tetris ==> ()
+    randomCommand(tetris) == (
+    	dcl rand: nat1 := MATH`rand(5) + 1;
+    	cases rand:
+    		1 -> tetris.moveCurrentPieceDown(),
+    		2 -> tetris.moveCurrentPieceLeft(),
+    		3 -> tetris.moveCurrentPieceRight(),
+    		4 -> tetris.rotate(),
+    		5 -> (tetris.drop(); tetris.next())
+    	end;
+    );
+    
+    public testPiece: () ==> ()
+    testPiece() == (
+    	dcl p: Piece := new Piece(10, 5, <O>, 'O');
+    	dcl p2: Piece;
+    	dcl pieceTypes: seq of Piece`Type := [<O>, <T>, <I>, <L>, <J>, <Z>, <S>];
+    	dcl lastTranslation: Piece`Coordinate;
+    	
+    	-- Test Constructor
+    	assertTrue(
+    		p.getTranslation().x = 10
+    		and p.getTranslation().y = 5
+    		and p.getSymbol() = 'O'
+    		and p.getOriginalSprite() = [mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(1, 1), mk_Piece`Coordinate(1, 0), mk_Piece`Coordinate(0, 1)]
+    		and p.getSprite() = [mk_Piece`Coordinate(0 + 10, 0 + 5), mk_Piece`Coordinate(1 + 10, 1 + 5), mk_Piece`Coordinate(1 + 10, 0 + 5), mk_Piece`Coordinate(0 + 10, 1 + 5)]
+    	);
+    	
+    	-- Test translations
+    	p.setTranslation(1, 1);
+    	assertTrue(p.getTranslation().x = 1 and p.getTranslation().y = 1);
+    	
+    	p.setTranslation(-1, 1);
+    	assertTrue(p.getTranslation().x = -1 and p.getTranslation().y = 1);
+    	
+    	p.setTranslation(1, -1);
+    	assertTrue(p.getTranslation().x = 1 and p.getTranslation().y = -1);
+    	
+    	p.setTranslation(-1, -1);
+    	assertTrue(p.getTranslation().x = -1 and p.getTranslation().y = -1);
+    	
+    	-- Test move
+    	lastTranslation := p.getTranslation();
+    	p.move(2,2);
+    	assertTrue(p.getTranslation().x = lastTranslation.x + 2
+    		and p.getTranslation().y = lastTranslation.y + 2);
+    	
+    	-- Test Rotation
+    	p.rotate();
+    	assertTrue(p.getRotation() = 1);
+    	
+    	-- Test Set Rotation
+    	p.setRotation(2);
+    	assertTrue(p.getRotation() = 1);
+    	
+    	-- Test Piece Static Creation Method
+    	for inc = 1 to len pieceTypes do (
+    		p2 := Piece`createNewPiece(pieceTypes(inc), 'X');
+    		assertTrue(p2.getOriginalSprite() = Piece`DEFAULT_SPRITES(pieceTypes(inc)));
+    	);
+    );
+    
+    public testPivotPiece: () ==> ()
+    testPivotPiece() == (
+    	dcl p: PivotPiece := new PivotPiece(10, 5, <L>, 'L');
+    	dcl lastRotation: nat1;
+    	dcl nextRotation: nat1;
+    	
+    	-- Test Rotation
+    	for inc = 1 to 5 do (
+    		lastRotation := p.getRotation();
+	    	if lastRotation = 4 then
+					nextRotation := 1
+				else
+					nextRotation := lastRotation + 1;
+	    	p.rotate();
+	    	assertTrue(p.getRotation() = nextRotation);
+    	);
+    	
+    	-- Test Set Rotation
+    	p := new PivotPiece(0, 0, <L>, 'L');
+    	p.setRotation(1);
+    	assertTrue(p.getRotation() = 1);
+    	assertTrue(p.getSprite() = p.getOriginalSprite());
+    	
+    	p.setRotation(2);
+    	assertTrue(p.getRotation() = 2);
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(1, 0), mk_Piece`Coordinate(-1, 0), mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(1, -1)] );
+    	
+    	p.setRotation(3);
+    	assertTrue(p.getRotation() = 3);
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(0, -1), mk_Piece`Coordinate(0, 1), mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(-1, -1)] );
+    	
+    	p.setRotation(4);
+    	assertTrue(p.getRotation() = 4);
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(-1, 0), mk_Piece`Coordinate(1, 0), mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(-1, 1)] );
+    	
+    );
+    
+    public testIShapePiece: () ==> ()
+    testIShapePiece() == (
+    	dcl p: IShapePiece := new IShapePiece(0, 0, 'I');
+    	p.rotate();
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(0, 2), mk_Piece`Coordinate(0, 1), mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(0, -1)] );
+    	p.rotate();
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(2, 0), mk_Piece`Coordinate(1, 0), mk_Piece`Coordinate(0, 0), mk_Piece`Coordinate(-1, 0)] );
+    	p.rotate();
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(1, -2), mk_Piece`Coordinate(1, -1), mk_Piece`Coordinate(1, 0), mk_Piece`Coordinate(1, 1)] );
+    	p.rotate();
+    	assertTrue(p.getSprite() = [mk_Piece`Coordinate(-1, -1), mk_Piece`Coordinate(0, -1), mk_Piece`Coordinate(1, -1), mk_Piece`Coordinate(2, -1)] );
+    	
     );
     
 end TetrisTest
