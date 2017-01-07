@@ -9,23 +9,27 @@ operations
 	PivotPiece(x, y, t, s) == (
 		currentRotation := 1;
 		Piece(x, y, t, s);
-	);
+	) post currentRotation = 1;
 	
 	public getRotation: () ==> nat1
 	getRotation() == (
 		return currentRotation;
-	);
+	) post RESULT >= 1 and RESULT <= 4;
 	
 	public setRotation: nat1 ==> ()
 	setRotation(rot) == (
 		currentRotation := rot;
 		sprite := rotateSprite(originalTiles);
-	);
+	) pre rot >= 1 and rot <= 4
+		post currentRotation >= 1 and currentRotation <= 4 
+		and len sprite = len sprite~;
 	
 	public rotate: () ==> ()
 	rotate() == (
 		rotation();
-	);
+	) post currentRotation >= 1 and currentRotation <= 4 
+		and elems sprite <> elems sprite~
+		and len sprite = len sprite~;
 	
 	protected rotation: () ==> ()
 	rotation() == (
@@ -35,7 +39,9 @@ operations
 			currentRotation := currentRotation + 1;
 		sprite := rotateSprite(originalTiles);
 		sprite := translateSprite(sprite, translation.x, translation.y);
-	);
+	) post currentRotation >= 1 and currentRotation <= 4 
+		and elems sprite <> elems sprite~
+		and len sprite = len sprite~;
 	
 	protected rotateSprite: Sprite ==> Sprite
 	rotateSprite(sp) == (
@@ -45,7 +51,7 @@ operations
 			 newSp(inc).y := sp(inc).y * cos(currentRotation) - sp(inc).x * sin(currentRotation);
 		);
 		return newSp;
-	);
+	) post len sp = len RESULT;
 	
 	private static cos: nat1 ==> int
 	cos(rot) == (
@@ -57,9 +63,8 @@ operations
 			4 -> cos := 0
 		end;
 		return cos;
-	)
-	pre rot < 5
-	post RESULT = 0 or RESULT = 1 or RESULT = -1;
+	) pre rot < 5
+		post RESULT = 0 or RESULT = 1 or RESULT = -1;
 	
 	private static sin: nat1 ==> int
 	sin(rot) == (
@@ -71,8 +76,7 @@ operations
 			4 -> cos := -1
 		end;
 		return cos;
-	)
-	pre rot < 5
-	post RESULT = 0 or RESULT = 1 or RESULT = -1;
+	) pre rot < 5
+		post RESULT = 0 or RESULT = 1 or RESULT = -1;
 	
 end PivotPiece

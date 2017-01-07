@@ -4,7 +4,7 @@ operations
 	public IShapePiece: int * int * char ==> IShapePiece
 	IShapePiece(x, y, s) == (
 		PivotPiece(x, y, <I>, s);
-	);
+	) post DEFAULT_SPRITES(<I>) = originalTiles;
 
 	public rotate: () ==> ()
 	rotate() == (

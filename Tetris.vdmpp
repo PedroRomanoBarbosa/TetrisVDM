@@ -19,6 +19,9 @@ instance variables
 	private beginning: bool;
 	
 operations
+	/*
+	* Constructor. Builds the tetris board and initializes variables.
+	*/
 	public Tetris: nat * nat ==> Tetris
 	Tetris(r,c) == (
 		beginning := true;
@@ -35,10 +38,19 @@ operations
 			table := table ^ [tempRow];
 		);
 		return self;
-	)
-	pre r > c
-	post len table = r;
+	) pre r >= 22
+		and c = 10
+		post rows = r
+		and columns = c
+		and len table = r
+		and forall r in seq table & forall t in seq r & t = ' '
+		and linesCleared = 0
+		and beginning = true
+		and finished = false;
 	
+	/*
+	* Sets a random piece for the current one and another for the next piece.
+	*/
 	private setRandomPiece: () ==> ()
 	setRandomPiece() == (
 		dcl rand: int := MATH`rand(len PIECE_TYPES) + 1;
@@ -67,40 +79,54 @@ operations
 					currentPiece.move(0, -1);
 		);
 		paintCurrentPiece();
-	);
+	) post currentPiece <> nextPiece; 
 	
 	public isGameFinished: () ==> bool
 	isGameFinished() == (
 		return finished;
-	);
+	) post finished = finished~;
 	
 	public getCurrentPiece: () ==> Piece
 	getCurrentPiece() == (
 		return currentPiece;
-	);
+	) post currentPiece = currentPiece~;
+	
+	public getNextPiece: () ==> Piece
+	getNextPiece() == (
+		return nextPiece;
+	) post nextPiece = nextPiece~;
 	
 	public getTile: nat1 * nat1 ==> char
 	getTile(x,y) == (
 		return table(y)(x);
-	);
+	) pre x > 0 and x <= columns
+		and y > 0 and y <= rows;
 	
 	public getLinesCleared: () ==> nat1
 	getLinesCleared() == (
 		return linesCleared;
-	);
+	) post linesCleared = linesCleared~;
 	
+	/*
+	* Initiates the tetris game.
+	*/
 	public init: () ==> ()
 	init() == (
 		setRandomPiece();
-	);
+	) pre finished = false
+		and beginning = true;
 
+	/*
+	* Drops current piece and assigns to the next piece.
+	*/
 	public next: () ==> ()
 	next() == (
 		if checkDownCollision(currentPiece.getSprite()) then (
 			checkLines();
 			setRandomPiece();
 		);
-	);
+	) pre finished = false
+		post currentPiece = nextPiece~;
 	
 	private moveCurrentPiece: int * int ==> ()
 	moveCurrentPiece(x,y) == (
@@ -166,6 +192,9 @@ operations
 		paintCurrentPiece();
 	);
 	
+	/*
+	* Checks if the current piece has at least one tile out of the board.
+	*/
 	public checkBoardOverlap: () ==> bool * bool * bool * bool
 	checkBoardOverlap() == (
 		dcl up: bool := false;
@@ -181,6 +210,9 @@ operations
 		return mk_(up, down, left, right);
 	);
 	
+	/*
+	* Checks if the current piece is overlapping with another one.
+	*/
 	public checkOverlap: () ==> bool
 	checkOverlap() == (
 		for tile in currentPiece.getSprite() do (
@@ -190,6 +222,9 @@ operations
 		return false;
 	);
 	
+	/*
+	* Checks if the current piece has another one underneath.
+	*/
 	public checkDownCollision: Piece`Sprite ==> bool
 	checkDownCollision(sp) == (
 		for tile in sp do (
@@ -202,6 +237,9 @@ operations
 		return false;
 	);
 	
+	/*
+	* Checks if the current piece has another one to its right.
+	*/
 	public checkRightCollision: Piece`Sprite ==> bool
 	checkRightCollision(sp) == (
 		for tile in sp do (
@@ -214,6 +252,9 @@ operations
 		return false;
 	);
 	
+	/*
+	* Checks if the current piece has another one to its left.
+	*/
 	public checkLeftCollision: Piece`Sprite ==> bool
 	checkLeftCollision(sp) == (
 		for tile in sp do (
@@ -226,12 +267,19 @@ operations
 		return false;
 	);
 	
+	/*
+	* Move the piece down until it has a collision.
+	*/
 	public drop: () ==> ()
 	drop() == (
 		while not checkDownCollision(currentPiece.getSprite()) do
 			moveCurrentPiece(0,1);
 	);
 	
+	/*
+	* Checks if there are any lines completed, removes them and pulls the remaining
+	* down.
+	*/
 	private checkLines: () ==> ()
 	checkLines() == (
 		dcl completeRows: seq of Row := [ r | r in seq table & ' ' not in set elems r];
@@ -242,7 +290,7 @@ operations
 			table(inc + newLines) := incompleteRows(inc);
 		);
 		linesCleared := linesCleared + newLines;
-	);
+	) post linesCleared >= linesCleared~;
 	
 	public paintCurrentPiece: () ==> ()
 	paintCurrentPiece() == (
@@ -262,6 +310,9 @@ operations
 		);
 	);
 	
+	/*
+	* Gets all the available positions in x for the currentPiece.
+	*/
 	private getCurrentPieceHorizontalInitialPositions: () ==> seq of nat1
 	getCurrentPieceHorizontalInitialPositions() == (
 		dcl positions: seq of nat1 := [];
@@ -303,7 +354,7 @@ operations
 				table(y)(x) := ' ';
 			);
 		);
-	);
+	) post forall r in seq table & forall t in seq r & t = ' '; 
 	
 	public print: () ==> ()
 	print() == (

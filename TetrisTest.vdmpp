@@ -32,8 +32,8 @@ class TetrisTest
     public testGame: () ==> ()
     testGame() == (
     	dcl tetris: Tetris;
-			for iter = 1 to 100 do (
-				tetris := new Tetris(15, 10);
+			for iter = 1 to 10 do (
+				tetris := new Tetris(22, 10);
 				tetris.init();
 				while not tetris.isGameFinished() do (
 					dcl lastTranslation: Piece`Coordinate;
@@ -86,9 +86,9 @@ class TetrisTest
     -- Tests random commands
     public testRandomCommands: () ==> ()
     testRandomCommands() == (
-    	dcl tetris: Tetris := new Tetris(15, 10);
-			for inc = 1 to 100 do (
-				tetris := new Tetris(15, 10);
+    	dcl tetris: Tetris := new Tetris(22, 10);
+			for inc = 1 to 10 do (
+				tetris := new Tetris(22, 10);
 				tetris.init();
 				while not tetris.isGameFinished() do (
 					randomCommand(tetris);
